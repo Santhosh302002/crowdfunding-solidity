@@ -65,9 +65,11 @@ contract FundContract{
     function totalValue() public view returns(uint256){
         return address(this).balance;
     }
-    function withdraw(uint256 amount) public {
+    function withdrawContractAmountOwner(uint256 amount) public {
         require(msg.sender==Owner, "You Don't have Access to WithDraw");
+        require(block.timestamp - startTimestamp > duration && address(this).balance >= GoalAmount,"Since Contract can't fullfill the goal, Funder money will be repayed");
         payable(Owner).transfer(amount);
+
     }
     function getLatestPrice() public view returns(uint256) {
          (, int256 price, , , ) = priceFeed.latestRoundData();
