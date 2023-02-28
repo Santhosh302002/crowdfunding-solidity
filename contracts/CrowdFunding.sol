@@ -9,22 +9,17 @@ import "./ERC20Token.sol";
 
 contract CrowdFunding is ERC20Token{
     /* State Variables*/
-    struct fundingDetails{
-        string fundingName;
-        uint256 fundingGoalValue;
-        address fundingAddress;
-    }
     struct funding{
         FundContract Name;
         address ContractAddress;
         string ContractName;
+        uint256 duration;
+        uint256 GoalAmount;
     }
     uint256 public count=0;
-    address public add;
     ERC20Token token;
     address public priceFeed;
 
-    fundingDetails[] public fundMe;     //fundingDetails 
     // FundContract[] public NewFund;      //createing new fund contract 
     funding[] public NewFund; 
 
@@ -49,27 +44,44 @@ contract CrowdFunding is ERC20Token{
             priceFeed=_priceFeed;
 
     }
-    function NewFundContract(string memory ContractName,uint value,uint256 _Duration) public OnlyOwner{
+    function NewFundContract(
+        string memory ContractName,
+        uint value,
+        uint256 _Duration,
+        uint256 FundingGoal
+        ) public OnlyOwner
+            {
 
-        string memory name= ContractName;
-        uint256 Duration=_Duration;
-        new FundContract(ContractName,i_owner,TokenAddress,Duration,priceFeed);
-        NewFund.push(funding(new FundContract(
-            ContractName,
-            i_owner,TokenAddress,Duration,priceFeed),
-            address(new FundContract(
-                ContractName,
-                i_owner,
-                TokenAddress,
-                Duration,
-                priceFeed
-                )),ContractName));
-        ContractFund[name]= address(new FundContract(ContractName,i_owner,TokenAddress,Duration,priceFeed));
-        // approve(payable(address(new FundContract(ContractName,i_owner,TokenAddress))),value);
-        // approve(address(new FundContract(ContractName,i_owner,TokenAddress)),value);
-        // transferFrom(address(this),(address(new FundContract(ContractName,i_owner,TokenAddress))),value);
-        add=address(NewFund[count].Name);
-        transfer(address(NewFund[count].Name),value);
+                string memory name= ContractName;
+                uint256 Duration=_Duration;
+                new FundContract(
+                    ContractName,
+                    i_owner,
+                    TokenAddress,
+                    Duration,
+                    priceFeed,
+                    FundingGoal );
+                NewFund.push(funding(new FundContract(
+                            ContractName,
+                            i_owner,
+                            TokenAddress,
+                            Duration,
+                            priceFeed,
+                            FundingGoal ),
+                        address(new FundContract(
+                            ContractName,
+                            i_owner,
+                            TokenAddress,
+                            Duration,
+                            priceFeed,
+                            FundingGoal)),
+                            ContractName,
+                            _Duration,
+                            FundingGoal
+                            )
+                            );
+        ContractFund[name]= address(new FundContract(ContractName,i_owner,TokenAddress,Duration,priceFeed,FundingGoal));
+        _transfer(address(this),address(NewFund[count].Name),value);
         count=count+1;
     }
 }
