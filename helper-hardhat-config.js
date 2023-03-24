@@ -22,6 +22,9 @@ const networkConfig = {
         // callbackGasLimit: "500000", // 500,000 gas
         // vrfCoordinatorV2: "0x2Ca8E0C643bDe4C2E08ab1fA0da3401AdAD7734D",
     },
+    11155111: {
+        name: "sepolia",
+    },
     // 1: {
     //     name: "mainnet",
     //     keepersUpdateInterval: "30",

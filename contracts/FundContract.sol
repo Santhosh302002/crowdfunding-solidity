@@ -4,6 +4,7 @@
 pragma solidity ^0.8.7;
 import "./ERC20Token.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+// import "./CrowdFunding.sol";
 //0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e
 
 
@@ -19,6 +20,7 @@ contract FundContract{
     uint256 public startTimestamp;
     uint256 public duration;
     uint256 public GoalAmount;
+    address public mainContractAddress;
 
     struct funder{
         address FunderAddress;
@@ -37,7 +39,8 @@ contract FundContract{
         address _token,
         uint256 _duration,
         address _priceFeed,
-        uint256 _GoalAmount
+        uint256 _GoalAmount,
+        address mainContractAddress
         // address contractAddress
         ) 
         {
@@ -49,13 +52,15 @@ contract FundContract{
             priceFeed= AggregatorV3Interface(_priceFeed);
             duration=_duration;
             GoalAmount=_GoalAmount;
+            mainContractAddress= mainContractAddress;
         }
     function pay() public payable {
         require(block.timestamp - startTimestamp < duration,"Time Over for the funding");
         funding.push(funder(msg.sender,msg.value));
-        token.transfer(msg.sender,calculateUSD(msg.value));
+        token.transfer(msg.sender,msg.value);
         funderToAmount[msg.sender]=msg.value;
-        funderToToken[msg.sender]=calculateUSD(msg.value);
+        funderToToken[msg.sender]=msg.value;
+        token.approve(address(this),msg.value);
     }
     function erc20token() public{
         erc20balance = token.balanceOf(address(this));
@@ -65,11 +70,9 @@ contract FundContract{
     function totalValue() public view returns(uint256){
         return address(this).balance;
     }
-    function withdrawContractAmountOwner(uint256 amount) public {
+    function withdraw(uint256 amount) public {
         require(msg.sender==Owner, "You Don't have Access to WithDraw");
-        require(block.timestamp - startTimestamp > duration && address(this).balance >= GoalAmount,"Since Contract can't fullfill the goal, Funder money will be repayed");
         payable(Owner).transfer(amount);
-
     }
     function getLatestPrice() public view returns(uint256) {
          (, int256 price, , , ) = priceFeed.latestRoundData();
@@ -81,10 +84,10 @@ contract FundContract{
         uint256 ethAmountInUsd = (price * Amount) / 1000000000000000000;
         return ethAmountInUsd;
     }
-    function withdraw() public payable{
-        if(block.timestamp - startTimestamp > duration && address(this).balance < GoalAmount){
-            token.transfer(address(this),funderToAmount[msg.sender]);
-           payable(msg.sender).transfer(funderToAmount[msg.sender]);
-        } revert CantWithDraw();
+
+    function withdraw() public{
+        require(block.timestamp - startTimestamp > duration && address(this).balance < GoalAmount,"The Goal is meet or The payment is still open");
+        payable(msg.sender).transfer(funderToAmount[msg.sender]);
+        token.transferFrom(msg.sender,address(this),funderToAmount[msg.sender]);
     }
 }

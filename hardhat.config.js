@@ -12,6 +12,7 @@ const GOERLI_RPC_URL =
   process.env.GOERLI_RPC_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
+const SEPOLIR_RPC_URL = process.env.SEPOLIR_RPC_URL
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -35,11 +36,18 @@ module.exports = {
       saveDeployments: true,
       chainId: 5,
     },
+    sepolia: {
+      url: SEPOLIR_RPC_URL,
+      accounts: [PRIVATE_KEY],
+      chainId: 11155111,
+      blockConfirmations: 6
+    },
   },
   etherscan: {
     // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
     apiKey: {
       goerli: ETHERSCAN_API_KEY,
+      sepolia: ETHERSCAN_API_KEY,
     },
     customChains: [
       {

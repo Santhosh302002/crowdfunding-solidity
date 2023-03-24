@@ -19,6 +19,7 @@ contract CrowdFunding is ERC20Token{
     uint256 public count=0;
     ERC20Token token;
     address public priceFeed;
+    address mainContractAddress;
 
     // FundContract[] public NewFund;      //createing new fund contract 
     funding[] public NewFund; 
@@ -42,6 +43,7 @@ contract CrowdFunding is ERC20Token{
             _mint(address(this),initalSupply);
             token = ERC20Token(TokenAddress);
             priceFeed=_priceFeed;
+            mainContractAddress=address(this);
 
     }
     function NewFundContract(
@@ -60,28 +62,34 @@ contract CrowdFunding is ERC20Token{
                     TokenAddress,
                     Duration,
                     priceFeed,
-                    FundingGoal );
+                    FundingGoal,
+                    mainContractAddress);
                 NewFund.push(funding(new FundContract(
                             ContractName,
                             i_owner,
                             TokenAddress,
                             Duration,
                             priceFeed,
-                            FundingGoal ),
+                            FundingGoal,
+                            mainContractAddress),
                         address(new FundContract(
                             ContractName,
                             i_owner,
                             TokenAddress,
                             Duration,
                             priceFeed,
-                            FundingGoal)),
+                            FundingGoal,
+                            mainContractAddress)),
                             ContractName,
                             _Duration,
                             FundingGoal
                             )
                             );
-        ContractFund[name]= address(new FundContract(ContractName,i_owner,TokenAddress,Duration,priceFeed,FundingGoal));
+        ContractFund[name]= address(new FundContract(ContractName,i_owner,TokenAddress,Duration,priceFeed,FundingGoal,mainContractAddress));
         _transfer(address(this),address(NewFund[count].Name),value);
         count=count+1;
     }
+
+
 }
+

@@ -10,11 +10,11 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const chainId = network.config.chainId;
 
     const args = [
-        "70000000000000000000",//wei
+        "70000000000000000000000000000000",//wei
         "ERECOIN",
         "ERE",
-        "1000000000000000000000",//wei
-        "5000000",
+        "1000000000000000000000000000000000",//wei
+        "50000",
         "0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e"
     ]
     const waitBlockConfirmations = developmentChains.includes(network.name)
